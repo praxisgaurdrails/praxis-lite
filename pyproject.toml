@@ -1,0 +1,98 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "praxis-guardrail"
+version = "0.1.0"
+description = "The on-device guardrail for agentic AI. Let AI agents (Claude, Codex/ChatGPT, Cursor, any MCP client) touch your files — without the risk. Blocks dangerous actions, refuses your secrets, and keeps a tamper-proof audit log. Runs entirely on your machine; works offline."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"
+authors = [
+    { name = "Praxis Guardrails" },
+]
+keywords = [
+    "guardrail",
+    "guardrails",
+    "ai-guardrail",
+    "agent-guardrail",
+    "ai-safety",
+    "ai-security",
+    "agent-security",
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "filesystem",
+    "on-device",
+    "offline",
+    "claude",
+    "codex",
+    "cursor",
+    "agentic-ai",
+    "llm-agents",
+    "audit-trail",
+    "policy-engine",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
+    "Intended Audience :: System Administrators",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
+    "Typing :: Typed",
+]
+dependencies = [
+    "click>=8.0.0",
+    "rich>=13.0.0",
+    "pydantic>=2.0.0",
+    "httpx>=0.25.0",
+    "cryptography>=41.0.0",
+    "aiofiles>=23.0.0",
+    "pyyaml>=6.0",
+    "rapidfuzz>=3.0.0",
+    "mcp[cli]>=1.2.0,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+]
+
+[project.scripts]
+praxis = "praxis.praxis_cli:main"
+praxis-daemon = "praxis.daemon:main"
+praxis-mcp = "praxis.mcp.praxis_server:main"
+
+[project.urls]
+Homepage = "https://github.com/praxisgaurdrails/praxis-lite"
+Repository = "https://github.com/praxisgaurdrails/praxis-lite"
+Issues = "https://github.com/praxisgaurdrails/praxis-lite/issues"
+
+[tool.setuptools.packages.find]
+include = ["praxis*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP", "B", "SIM"]
+ignore = ["E501"]
