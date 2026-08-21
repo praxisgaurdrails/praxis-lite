@@ -1,0 +1,43 @@
+# Praxis Policy: Support Agent
+# Allow viewing customer accounts, block account modifications.
+
+name: support-agent
+description: View customer data, block account changes and billing modifications
+version: "1.0"
+
+block_js_evaluation: true
+block_all_downloads: false
+block_clipboard: true
+max_actions_per_minute: 90
+
+allowed_domains: []
+
+rules:
+  - action: navigate
+    block:
+      - pattern: "*/admin/*"
+      - pattern: "*/billing/edit*"
+      - pattern: "*/settings/*"
+
+  - action: click
+    block_elements:
+      - intent: authentication
+        risk: high
+      - intent: delete
+        risk: high
+      - intent: financial
+        risk: high
+      - text_contains: ["Change Plan", "Upgrade", "Downgrade"]
+        risk: high
+    require_approval:
+      - intent: messaging
+        risk: medium
+      - intent: modify
+        risk: medium
+
+  - action: type
+    block_elements:
+      - intent: sensitive_field
+      - selector: "input[type='password']"
+      - selector: "input[name='email']"
+        on_pages: "*/billing/*"

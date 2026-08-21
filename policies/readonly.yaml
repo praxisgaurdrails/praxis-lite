@@ -1,0 +1,24 @@
+# Praxis Policy: Read Only
+# Blocks all mutation actions. Agent can only view content.
+
+name: readonly
+description: Read-only mode — no clicks, typing, downloads, or uploads
+version: "1.0"
+
+block_all_downloads: true
+block_all_uploads: true
+block_js_evaluation: true
+block_clipboard: true
+
+rules:
+  - action: click
+    block_risk_above: low
+
+  - action: type
+    block_risk_above: none
+
+  - action: submit
+    block_risk_above: none
+
+  - action: select
+    block_risk_above: none

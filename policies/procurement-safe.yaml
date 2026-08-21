@@ -1,0 +1,36 @@
+# Praxis Policy: Procurement Safe
+# Allow browsing vendor catalogs, block order placement without approval.
+
+name: procurement-safe
+description: Browse vendors and compare, but require approval for orders
+version: "1.0"
+
+block_js_evaluation: true
+block_clipboard: false
+max_actions_per_minute: 120
+
+rules:
+  # Navigation
+  - action: navigate
+    block:
+      - pattern: "*/admin/*"
+      - pattern: "*/settings/*"
+
+  # Click rules — smart intent matching
+  - action: click
+    block_elements:
+      - intent: payment
+        risk: high
+      - intent: delete
+        risk: high
+    require_approval:
+      - text_contains: ["Add to Cart", "Add to List", "Request Quote"]
+        risk: medium
+      - intent: confirm
+        risk: medium
+
+  # Type rules
+  - action: type
+    block_elements:
+      - intent: sensitive_field
+      - selector: "input[type='password']"

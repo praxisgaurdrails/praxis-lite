@@ -1,0 +1,48 @@
+# Praxis Policy: Finance Safe
+# Allow reading financial data, block all payment and destructive actions.
+
+name: finance-safe
+description: Allow reading invoices and reports, block all payment actions
+version: "1.0"
+
+# Global settings
+block_all_downloads: false
+block_all_uploads: false
+block_js_evaluation: true
+block_clipboard: true
+max_actions_per_minute: 60
+
+# Domain restrictions (empty = all allowed)
+allowed_domains: []
+blocked_domains:
+  - malware.example.com
+
+rules:
+  # Navigation rules
+  - action: navigate
+    block:
+      - pattern: "*/admin/*"
+      - pattern: "*/settings/*"
+      - pattern: "*/payments/new*"
+      - pattern: "*/transfer/*"
+
+  # Click rules — using smart intent matching
+  - action: click
+    block_elements:
+      - intent: payment
+        risk: high
+      - intent: delete
+        risk: high
+      - intent: admin
+        risk: high
+    require_approval:
+      - intent: confirm
+        risk: medium
+      - intent: modify
+        risk: medium
+
+  # Type rules (block sensitive fields — smart matching)
+  - action: type
+    block_elements:
+      - intent: sensitive_field
+      - selector: "input[type='password']"
