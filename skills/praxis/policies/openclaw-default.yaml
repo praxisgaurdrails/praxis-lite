@@ -1,0 +1,82 @@
+# Praxis Policies for OpenClaw
+# Copy these to your OpenClaw workspace or point --policy-dir here
+
+name: openclaw-default
+description: Balanced policy for OpenClaw browser actions — allow reading, block dangerous writes
+version: "1.0"
+max_risk: medium
+
+# Block dangerous URL patterns
+url_rules:
+  - pattern: ".*/admin/.*"
+    decision: block
+    reason: "Admin panels are off-limits"
+
+  - pattern: ".*/settings/security.*"
+    decision: block
+    reason: "Security settings are off-limits"
+
+  - pattern: ".*/settings/billing.*"
+    decision: block
+    reason: "Billing settings require human access"
+
+  - pattern: ".*/delete.*"
+    decision: block
+    reason: "Delete operations are blocked"
+
+  - pattern: ".*chrome-extension://.*"
+    decision: block
+    reason: "Browser extensions are off-limits"
+
+  - pattern: ".*file:///.*"
+    decision: block
+    reason: "Local file access is blocked"
+
+# Block dangerous button clicks
+element_rules:
+  # Financial actions
+  - text_pattern: "(?i)(pay|payment|transfer|wire|send money|checkout|place order)"
+    decision: block
+    reason: "Financial transactions require human approval"
+
+  # Destructive actions
+  - text_pattern: "(?i)(delete|remove|destroy|purge|erase|drop|truncate)"
+    decision: block
+    reason: "Destructive actions are blocked"
+
+  # Account/permission changes
+  - text_pattern: "(?i)(deactivate|suspend|terminate|revoke|ban|disable account)"
+    decision: block
+    reason: "Account state changes require human approval"
+
+  # Data export (potential exfiltration)
+  - text_pattern: "(?i)(export all|download all|bulk export|mass download)"
+    decision: require_approval
+    reason: "Bulk data export needs approval"
+
+  # Submissions that need oversight
+  - text_pattern: "(?i)(submit|confirm|send|publish|post|broadcast)"
+    decision: require_approval
+    reason: "Submissions require human approval"
+
+# Block dangerous action types
+action_rules:
+  # No JavaScript execution
+  - action_type: evaluate_js
+    decision: block
+    reason: "JavaScript execution is not allowed"
+
+  # No file uploads without approval
+  - action_type: upload
+    decision: require_approval
+    reason: "File uploads need approval"
+
+  # No clipboard access
+  - action_type: copy
+    decision: block
+    reason: "Clipboard access is restricted"
+
+# Rate limiting
+rate_limit:
+  max_actions_per_minute: 30
+  max_navigations_per_minute: 10

@@ -1,0 +1,84 @@
+# Praxis Strict Policy for OpenClaw
+# Maximum safety — use when your OpenClaw handles sensitive data
+
+name: openclaw-strict
+description: Maximum safety policy for high-risk OpenClaw tasks (banking, medical, legal)
+version: "1.0"
+max_risk: low
+
+# Very restrictive URL access
+url_rules:
+  # Only allow HTTPS
+  - pattern: "http://.*"
+    decision: block
+    reason: "Only HTTPS connections allowed in strict mode"
+
+  # Block all admin/settings
+  - pattern: ".*/admin.*"
+    decision: block
+    reason: "Admin access blocked in strict mode"
+
+  - pattern: ".*/settings.*"
+    decision: block
+    reason: "Settings access blocked in strict mode"
+
+  - pattern: ".*/api/.*"
+    decision: block
+    reason: "Direct API access blocked in strict mode"
+
+  - pattern: ".*localhost.*"
+    decision: block
+    reason: "Localhost access blocked in strict mode"
+
+  - pattern: ".*127\\.0\\.0\\.1.*"
+    decision: block
+    reason: "Loopback access blocked in strict mode"
+
+# Block almost all interactive elements
+element_rules:
+  # Block all financial
+  - text_pattern: "(?i)(pay|transfer|wire|checkout|order|purchase|buy|subscribe)"
+    decision: block
+    reason: "Financial actions blocked in strict mode"
+
+  # Block all destructive
+  - text_pattern: "(?i)(delete|remove|destroy|cancel|revoke|terminate|disable)"
+    decision: block
+    reason: "Destructive actions blocked in strict mode"
+
+  # Block all auth-related
+  - text_pattern: "(?i)(login|sign.?in|register|sign.?up|forgot.?password|reset.?password)"
+    decision: block
+    reason: "Authentication actions blocked in strict mode"
+
+  # Require approval for everything else that modifies state
+  - text_pattern: "(?i)(submit|confirm|send|save|update|edit|change|modify|create|add|upload|import)"
+    decision: require_approval
+    reason: "All state-changing actions need approval in strict mode"
+
+# Block everything dangerous
+action_rules:
+  - action_type: evaluate_js
+    decision: block
+    reason: "JavaScript execution blocked in strict mode"
+
+  - action_type: upload
+    decision: block
+    reason: "File uploads blocked in strict mode"
+
+  - action_type: download
+    decision: block
+    reason: "Downloads blocked in strict mode"
+
+  - action_type: copy
+    decision: block
+    reason: "Clipboard blocked in strict mode"
+
+  - action_type: key_press
+    decision: require_approval
+    reason: "Key presses need approval in strict mode"
+
+# Aggressive rate limiting
+rate_limit:
+  max_actions_per_minute: 15
+  max_navigations_per_minute: 5
