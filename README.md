@@ -13,25 +13,33 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green?style=flat-square" alt="MIT License"></a>
 </p>
 
-**Praxis** is an **on-device guardrail** for AI agents. It sits between the AI tools you
-already use — ChatGPT/Codex, Claude, Cursor, any MCP client — and your machine. Before an
-agent reads a file, deletes something, or runs an action, Praxis checks it against your
-policy and decides: **allow, block, or ask you first.**
+**Praxis** is the **guardrail for agentic AI**. It sits between the AI tools you already
+use — ChatGPT/Codex, Claude, Cursor, any MCP client — and everything they can act on:
+**your files, the browser, and APIs**. Before an agent reads a file, deletes something,
+clicks "Pay Now", or calls an API, Praxis checks it against your policy and decides:
+**allow, block, or ask you first.**
 
-**Yours, on your hardware.** Praxis runs entirely on your computer. Your files, your
-prompts, and every action an agent takes never leave your device — there is no Praxis
+One policy engine, every surface an agent can touch:
+
+- 🗂️ **Your device & files** — guard filesystem actions on your own machine *(in Lite, free)*
+- 🌐 **The browser** — block a rogue "Pay Now" or a destructive UI action *(Praxis Pro)*
+- 🔌 **APIs & tools** — govern outbound API and tool calls *(Praxis Pro)*
+
+**Yours, on your hardware.** The Lite core runs entirely on your computer. Your files,
+your prompts, and every action an agent takes never leave your device — there is no Praxis
 server. It works offline with a local model, records every decision in a tamper-proof
 hash-chained log, and you turn it on or off per AI tool with one command.
 
-> This repo is **Praxis Lite** — the free, **MIT-licensed** core: the on-device MCP
-> filesystem guardrail. `pip install praxis-guardrail`.
+> This repo is **Praxis Lite** — the free, **MIT-licensed** on-device core: the MCP
+> filesystem guardrail. `pip install praxis-guardrail`. Need browser + API guardrails?
+> See [**Praxis Pro**](https://praxis.app).
 
 <p align="center">
   <a href="#install">Install</a> ·
   <a href="#quick-start">Quick start</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#what-it-looks-like">See it work</a> ·
-  <a href="#whats-in-lite">What's in Lite</a> ·
+  <a href="#lite-vs-pro">Lite vs Pro</a> ·
   <a href="#security">Security</a>
 </p>
 
@@ -55,14 +63,29 @@ Praxis is the missing safety layer:
 
 ## Install
 
+**With pip** (recommended — works on macOS, Windows, and Linux, Python 3.11+):
+
 ```bash
 pip install praxis-guardrail
 praxis --version
 ```
 
-Requires Python 3.11+. Works on macOS, Windows, and Linux.
+The package is pure-Python and cross-platform — the same `pip install` works on **macOS,
+Windows, and Linux**.
 
-Or from source:
+**No Python?** Download a standalone bundle (no install required) for your OS from the
+[latest release](https://github.com/praxisgaurdrails/praxis-lite/releases/latest):
+
+| Platform | Download |
+| --- | --- |
+| 🍎 macOS (Apple Silicon / Intel) | `Praxis-Lite-macos-*.zip` |
+| 🪟 Windows 10/11 | `Praxis-Lite-windows.zip` |
+| 🐧 Linux (x86_64) | `Praxis-Lite-linux-*.tar.gz` |
+
+> On macOS the beta bundle isn't code-signed yet — the first time you run it, right-click
+> the `praxis` launcher → **Open**.
+
+**From source:**
 
 ```bash
 git clone https://github.com/praxisgaurdrails/praxis-lite.git
@@ -159,24 +182,37 @@ guardrail without the annoyance.
 
 ---
 
-## What's in Lite
+## Lite vs Pro
 
-Praxis Lite (this package, MIT) is the free on-device guardrail:
+**Praxis Lite** (this package, MIT, free) is the on-device core — the filesystem guardrail
+that governs what AI agents do on your machine. **Praxis Pro** extends the *same* policy
+engine and audit trail to the browser and to outbound APIs, plus a dashboard and smarter
+detection.
 
-| Feature | In Lite |
-| --- | --- |
-| MCP filesystem guardrail (Claude / Codex / Cursor) | ✅ |
-| Block dangerous actions from agents | ✅ |
-| Refuse credential access (`~/.ssh`, `~/.aws`, keychains) | ✅ |
-| Tamper-proof hash-chained audit log | ✅ |
-| Offline local model (Ollama) | ✅ |
-| Fuzzy on-device file search & safe operations | ✅ |
-| Recoverable staged trash (24h undo) | ✅ |
-| Background daemon | ✅ |
+| | **Lite** (free, MIT) | **Pro** |
+| --- | :---: | :---: |
+| MCP filesystem guardrail (Claude / Codex / Cursor) | ✅ | ✅ |
+| Block dangerous actions from agents | ✅ | ✅ |
+| Refuse credential access (`~/.ssh`, `~/.aws`, keychains) | ✅ | ✅ |
+| Tamper-proof hash-chained audit log | ✅ | ✅ |
+| Offline local model (Ollama) | ✅ | ✅ |
+| Fuzzy on-device file search & safe operations | ✅ | ✅ |
+| Recoverable staged trash (24h undo) | ✅ | ✅ |
+| Background daemon | ✅ | ✅ |
+| 🌐 **Secure browser guardrail** (block a rogue "Pay Now") | — | ✅ |
+| 🔌 **API / tool-call guardrail** | — | ✅ |
+| REST sidecar for agent frameworks (LangChain, CrewAI, OpenClaw…) | — | ✅ |
+| Web dashboard & evidence viewer | — | ✅ |
+| NLP semantic intent detection | — | ✅ |
+| Priority support | — | ✅ |
 
-The paid **Full** edition adds a browser-action guardrail (block "Pay Now"), a REST
-sidecar for framework integration, a web dashboard & evidence viewer, and NLP semantic
-intent detection.
+### → Get Praxis Pro
+
+Want the browser and API guardrails, the dashboard, and framework integrations?
+
+**[Download Praxis Pro at praxis.app →](https://praxis.app)**
+
+Check which edition you're running with `praxis edition`.
 
 ---
 

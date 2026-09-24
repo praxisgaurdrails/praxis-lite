@@ -1,0 +1,70 @@
+name: Build bundles
+
+# Builds standalone Praxis Lite bundles for macOS, Windows, and Linux on
+# native runners, then attaches them to a GitHub Release when a version
+# tag is pushed. These are the "download the app, no Python needed"
+# builds linked from the README.
+#
+#   git tag v0.1.1 && git push origin v0.1.1
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package + build deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+          python -m pip install pyinstaller
+        shell: bash
+
+      - name: Build Lite bundle
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            powershell -ExecutionPolicy Bypass -File packaging/build.ps1
+          else
+            bash packaging/build.sh
+          fi
+        shell: bash
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: praxis-lite-${{ matrix.os }}
+          path: dist/artifacts/*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: artifacts/**/*
+          generate_release_notes: true

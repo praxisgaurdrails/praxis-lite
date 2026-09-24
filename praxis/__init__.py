@@ -21,7 +21,7 @@ Core modules:
     - llm:         offline local-model (Ollama) support
 """
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 from praxis.policy.engine import Policy, PolicyEngine
 from praxis.evidence.vault import EvidenceVault

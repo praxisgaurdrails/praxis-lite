@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "praxis-guardrail"
-version = "0.1.0"
-description = "The on-device guardrail for agentic AI. Let AI agents (Claude, Codex/ChatGPT, Cursor, any MCP client) touch your files — without the risk. Blocks dangerous actions, refuses your secrets, and keeps a tamper-proof audit log. Runs entirely on your machine; works offline."
+version = "0.1.1"
+description = "The guardrail for agentic AI. Praxis sits between the AI tools you use (Claude, Codex/ChatGPT, Cursor, any MCP client) and everything they can act on — your files, the browser, and APIs — deciding allow / block / ask before each action. This free, MIT-licensed Lite edition is the on-device core: it guards filesystem actions on your own machine, blocks dangerous operations, refuses your secrets, works offline, and keeps a tamper-proof audit log. Praxis Pro extends the same policy engine to secure browser actions and API/tool calls."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
