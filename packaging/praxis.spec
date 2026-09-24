@@ -38,6 +38,13 @@ hiddenimports = [
     "mcp.server",
     "mcp.server.fastmcp",
     "mcp.server.stdio",
+    "starlette",
+    "starlette.applications",
+    "starlette.routing",
+    "starlette.responses",
+    "starlette.requests",
+    "uvicorn",
+    "sse_starlette",
     "rapidfuzz",
     "httpx",
     "pydantic",
@@ -48,6 +55,9 @@ hiddenimports = [
 ]
 
 # Lite excludes the heavy premium (Full-only) dependencies entirely.
+# NOTE: starlette + uvicorn are NOT excluded — mcp's FastMCP imports
+# starlette at module load even for the stdio transport, so excluding it
+# breaks `praxis mcp` in the frozen bundle.
 excludes = [
     "numpy.f2py",
     "tkinter",
@@ -58,9 +68,7 @@ excludes = [
     "fastembed",
     "onnxruntime",
     "fastapi",
-    "uvicorn",
     "jinja2",
-    "starlette",
 ]
 
 # Bundle the policy presets.
