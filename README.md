@@ -122,6 +122,35 @@ praxis clients             # check status
 
 ---
 
+## Choose how strict it is
+
+By default Praxis is **balanced** — agents read freely, writes need your approval, and
+deletes are blocked. Run the setup wizard to pick a different depth:
+
+```bash
+praxis init
+```
+
+It asks you to choose a strictness preset (or a fully custom matrix) and which folders
+agents may search, then writes `~/.praxis/config.toml`:
+
+| Preset | AI agents can… | You can… |
+| --- | --- | --- |
+| **paranoid** | only **read**; writes & deletes blocked | write/delete after an approval prompt |
+| **balanced** *(default)* | read; **writes need approval**; **deletes blocked** | write freely; delete after approval |
+| **permissive** | read; writes need approval; **delete with approval** | do anything |
+| **custom** | you set `allow` / `ask` / `block` per action | you set it per action |
+
+```bash
+praxis init --strictness paranoid --yes   # non-interactive
+```
+
+The matrix is `read` (T0) · `write` (T1) · `delete` (T2). Root/irreversible actions are
+**always blocked**, regardless of preset. Restart your AI tools (or the daemon) after
+changing it.
+
+---
+
 ## What it looks like
 
 Once connected, ask your AI agent to do something. Here's Praxis governing a real agent:
@@ -178,7 +207,9 @@ decides the outcome:
 ```
 
 So the *same* delete request is frictionless for you but blocked for an AI agent — the
-guardrail without the annoyance.
+guardrail without the annoyance. This is the **balanced** default; the `praxis:local` /
+`agent:*` × `T0`/`T1`/`T2` cells are all configurable via [`praxis init`](#choose-how-strict-it-is)
+(unauthenticated callers and T3 are always blocked).
 
 ---
 

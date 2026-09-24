@@ -208,6 +208,13 @@ class PraxisDaemon:
         except OSError:
             pass
 
+        # --- User config (strictness matrix + roots) ---
+        from praxis.config import PraxisConfig, set_config
+
+        self.praxis_config = PraxisConfig.load(state / "config.toml")
+        set_config(self.praxis_config)
+        logger.info("Praxis strictness = %s", self.praxis_config.strictness)
+
         # --- Principal resolver + local key ---
         key_path = self.config.resolved_local_key_path()
         key = ensure_local_key(key_path)

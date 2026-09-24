@@ -39,3 +39,14 @@ def _reset_license_singleton(request, monkeypatch):
 
     yield
     LicenseManager._instance = None
+
+
+@pytest.fixture(autouse=True)
+def _reset_praxis_config():
+    """Ensure the process-wide PraxisConfig cache never leaks between
+    tests (config tests install paranoid/permissive globally)."""
+    from praxis.config import reset_config
+
+    reset_config()
+    yield
+    reset_config()

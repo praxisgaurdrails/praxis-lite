@@ -166,6 +166,106 @@ def edition() -> None:
 
 
 @main.command()
+@click.option("--strictness", type=click.Choice(["paranoid", "balanced", "permissive"]),
+              default=None, help="Skip the wizard and use a preset directly.")
+@click.option("--yes", is_flag=True, help="Accept defaults without prompting.")
+def init(strictness: str | None, yes: bool) -> None:
+    """Set up Praxis — choose how deep the guardrail interrupts tool calls."""
+    from praxis.config import (
+        PRESETS,
+        PraxisConfig,
+        default_config_path,
+        DEFAULT_SEARCH_ROOTS,
+    )
+
+    path = default_config_path()
+    console.print(Panel(
+        "[bold]Welcome to Praxis[/] — the guardrail for agentic AI.\n\n"
+        "Let's choose how strict the guardrail is. This controls what an\n"
+        "external AI agent (and you) can do to your files, by risk level:\n"
+        "  [cyan]read[/] (T0) · [cyan]write[/] (T1) · [cyan]delete[/] (T2).\n"
+        "[dim](root/irreversible actions are always blocked.)[/]",
+        border_style="cyan", title="praxis init",
+    ))
+
+    presets_help = {
+        "paranoid": "agents may only READ; you're asked before writes & deletes",
+        "balanced": "agents read freely, writes need approval, deletes blocked "
+                    "(recommended)",
+        "permissive": "agents may delete with approval; you act freely",
+    }
+
+    if strictness is None:
+        console.print("\n[bold]Choose a strictness preset:[/]")
+        for name in ("paranoid", "balanced", "permissive"):
+            console.print(f"  [cyan]{name:<11}[/] — {presets_help[name]}")
+        console.print("  [cyan]{:<11}[/] — set each decision yourself".format("custom"))
+        if yes:
+            strictness = "balanced"
+        else:
+            strictness = click.prompt(
+                "\nStrictness",
+                type=click.Choice(["paranoid", "balanced", "permissive", "custom"]),
+                default="balanced",
+            )
+
+    if strictness == "custom":
+        cfg = PraxisConfig(strictness="custom")
+        console.print("\n[bold]Custom matrix[/] — pick allow / ask / block for each:")
+        for who, label in (("local", "You (praxis:local)"), ("agent", "AI agents (agent:*)")):
+            console.print(f"\n[bold]{label}[/]")
+            for action in ("read", "write", "delete"):
+                default = PRESETS["balanced"][who][action]
+                choice = click.prompt(
+                    f"  {action:<7}",
+                    type=click.Choice(["allow", "ask", "block"]),
+                    default=default,
+                )
+                cfg.decisions[who][action] = choice  # type: ignore[index]
+    else:
+        cfg = PraxisConfig.from_preset(strictness)
+
+    # Search roots.
+    roots_default = ", ".join(DEFAULT_SEARCH_ROOTS)
+    if yes:
+        roots_raw = roots_default
+    else:
+        roots_raw = click.prompt(
+            "\nFolders agents may search/read (comma-separated)",
+            default=roots_default,
+        )
+    cfg.search_roots = [r.strip() for r in roots_raw.split(",") if r.strip()]
+
+    # Preview the resolved matrix.
+    table = Table(title=f"Praxis policy · strictness = {cfg.strictness}", box=box.SIMPLE)
+    table.add_column("action", style="bold")
+    table.add_column("you (local)")
+    table.add_column("AI agent")
+    style = {"allow": "[green]allow[/]", "ask": "[yellow]ask[/]", "block": "[red]block[/]"}
+    for action in ("read", "write", "delete"):
+        table.add_row(
+            action,
+            style[cfg.outcome("local", action)],
+            style[cfg.outcome("agent", action)],
+        )
+    table.add_row("root", "[red]block[/]", "[red]block[/]")
+    console.print("\n", table)
+    console.print(f"[dim]Search roots: {', '.join(cfg.search_roots)}[/]")
+
+    if not yes and path.exists():
+        if not click.confirm(f"\nOverwrite existing config at {path}?", default=True):
+            console.print("[yellow]Aborted — no changes made.[/]")
+            return
+
+    saved = cfg.save(path)
+    console.print(
+        f"\n[green]✓ Saved to {saved}[/]\n"
+        "[bold]Restart your AI tools (or run `praxis daemon`) for it to take effect.[/]\n"
+        "[dim]Re-run `praxis init` anytime, or edit the file directly.[/]"
+    )
+
+
+@main.command()
 def doctor() -> None:
     """Check that everything Praxis needs is in place."""
     table = Table(title="Praxis environment check", box=box.ROUNDED)

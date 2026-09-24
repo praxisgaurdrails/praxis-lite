@@ -355,15 +355,22 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 2
 
+    # Load the user's Praxis config (strictness matrix + roots) from the
+    # state dir and install it process-wide so the tier gate honours it.
+    from praxis.config import PraxisConfig, set_config
+
+    cfg = PraxisConfig.load(args.state_dir / "config.toml")
+    set_config(cfg)
+
     # Resolve search roots from --search-roots (comma-separated) and/or
-    # --search-root (repeatable).  Falls back to $HOME.
+    # --search-root (repeatable).  Falls back to the config, then $HOME.
     roots: list[str] = []
     if args.search_roots:
         roots.extend(r.strip() for r in args.search_roots.split(",") if r.strip())
     if args.search_root_list:
         roots.extend(args.search_root_list)
     if not roots:
-        roots = [str(Path.home())]
+        roots = list(cfg.search_roots) if cfg.search_roots else [str(Path.home())]
 
     mcp, state = build_server(
         principal=principal,
@@ -377,6 +384,7 @@ def main(argv: list[str] | None = None) -> int:
     # without polluting stdout (which is the MCP wire protocol).
     print(
         f"[praxis] MCP server ready — principal={principal} "
+        f"strictness={cfg.strictness} "
         f"transport={args.transport} state_dir={args.state_dir}",
         file=sys.stderr,
     )
