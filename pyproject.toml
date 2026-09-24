@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "praxis-guardrail"
-version = "0.2.2"
+version = "0.3.0"
 description = "The guardrail for agentic AI. Praxis sits between the AI tools you use (Claude, Codex, Cursor, any MCP client) and everything they act on — your files, the browser, and APIs — deciding allow / block / ask before each action. This free, MIT-licensed Lite edition is the on-device core: it guards filesystem actions, blocks dangerous operations, refuses your secrets, works offline, and keeps a tamper-proof audit log. Pro extends the same engine to browser and API/tool calls."
 readme = "README.md"
 license = "MIT"
@@ -64,18 +64,25 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+menubar = [
+    "pystray>=0.19.0",
+    "pillow>=10.0.0",
+]
 dev = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "pytest-cov>=4.0.0",
     "ruff>=0.1.0",
     "mypy>=1.0.0",
+    "pystray>=0.19.0",
+    "pillow>=10.0.0",
 ]
 
 [project.scripts]
 praxis = "praxis.praxis_cli:main"
 praxis-daemon = "praxis.daemon:main"
 praxis-mcp = "praxis.mcp.praxis_server:main"
+praxis-menubar = "praxis.menubar:run_tray"
 
 [project.urls]
 Homepage = "https://github.com/praxisgaurdrails/praxis-lite"

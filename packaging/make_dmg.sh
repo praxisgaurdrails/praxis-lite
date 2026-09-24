@@ -58,8 +58,10 @@ esac
 "$LAUNCH" --version || true
 [ -f "$HOME/.praxis/config.toml" ] || "$LAUNCH" init --strictness balanced --yes >/dev/null 2>&1 || true
 "$LAUNCH" install || true
+"$LAUNCH" autostart enable >/dev/null 2>&1 || true
 echo ""
-echo "✅ Praxis installed. Restart your AI tool (Codex, Claude, Cursor…)."
+echo "✅ Praxis installed and running in your menubar (shield icon)."
+echo "Restart your AI tool (Codex, Claude, Cursor…). Manage Praxis from the menubar."
 echo "Open a NEW terminal so the 'praxis' command works."
 EOF
 chmod +x "$STAGE/Install Praxis.command"

@@ -266,6 +266,36 @@ def init(strictness: str | None, yes: bool) -> None:
 
 
 @main.command()
+def menubar() -> None:
+    """Run the Praxis menubar app (background control for strictness + tools).
+
+    Lives in your macOS menubar / system tray. Toggle Praxis per AI tool and
+    change strictness — the trusted, human-only control surface (an agent can
+    never disable its own guardrail from chat).
+    """
+    from praxis.menubar import run_tray
+
+    raise SystemExit(run_tray())
+
+
+@main.command()
+@click.argument("action", type=click.Choice(["enable", "disable", "status"]))
+def autostart(action: str) -> None:
+    """Start the Praxis menubar automatically at login (enable/disable/status)."""
+    from praxis import autostart as a
+
+    if action == "enable":
+        console.print(f"[green]✓ {a.enable()}[/]")
+        console.print("[dim]Praxis will run in your menubar at login.[/]")
+    elif action == "disable":
+        a.disable()
+        console.print("[yellow]Autostart disabled.[/]")
+    else:
+        state = "[green]enabled[/]" if a.is_enabled() else "[yellow]disabled[/]"
+        console.print(f"Login autostart: {state}")
+
+
+@main.command()
 def doctor() -> None:
     """Check that everything Praxis needs is in place."""
     table = Table(title="Praxis environment check", box=box.ROUNDED)

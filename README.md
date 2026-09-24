@@ -158,6 +158,29 @@ changing it.
 
 ---
 
+## Manage it from your menubar
+
+Praxis runs quietly in your **menubar / system tray** (the shield icon). From there you can,
+in one click:
+
+- **toggle Praxis** on/off in each AI tool (Codex, Claude, Cursor, Windsurf),
+- switch **strictness** (paranoid / balanced / permissive),
+- open the config folder.
+
+```bash
+praxis menubar            # run it now (the installers also start it at login)
+praxis autostart enable   # (or disable) run it automatically at login
+```
+
+> **Why a menubar app and not `/praxis disable` in the AI chat?** An AI agent must never be
+> able to switch off its own guardrail — that would defeat the point. The menubar is *your*
+> trusted, human-only control surface. (The one-line installer sets this up for you.)
+
+The tray app needs a small extra when installed via pip: `pip install 'praxis-guardrail[menubar]'`
+(the downloadable app already includes it).
+
+---
+
 ## What it looks like
 
 Once connected, ask your AI agent to do something. Here's Praxis governing a real agent:

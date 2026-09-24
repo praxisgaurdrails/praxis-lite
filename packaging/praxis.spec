@@ -53,7 +53,28 @@ hiddenimports = [
     "rich",
     "aiofiles",
     "yaml",
+    # Menubar app (optional at runtime, bundled so the app ships with it).
+    "praxis.menubar",
+    "praxis.autostart",
+    "pystray",
+    "PIL",
+    "PIL.Image",
+    "PIL.ImageDraw",
 ]
+
+# Menubar tray backend is OS-specific.
+if sys.platform == "darwin":
+    hiddenimports += [
+        "pystray._darwin",
+        "objc",
+        "AppKit",
+        "Foundation",
+        "Quartz",
+    ]
+elif sys.platform.startswith("win"):
+    hiddenimports += ["pystray._win32"]
+else:
+    hiddenimports += ["pystray._xorg", "pystray._gtk", "pystray._appindicator"]
 
 # Lite excludes the heavy premium (Full-only) dependencies entirely.
 # NOTE: starlette + uvicorn are NOT excluded — mcp's FastMCP imports
