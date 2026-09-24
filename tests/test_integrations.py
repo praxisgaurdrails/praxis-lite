@@ -160,6 +160,32 @@ class TestTOMLClient:
         assert "node_repl" in data["mcp_servers"]
         assert "praxis" not in data.get("mcp_servers", {})
 
+    def test_disable_removes_praxis_subtables(self, toml_client):
+        """Regression: disable must remove nested [mcp_servers.praxis.*]
+        sub-tables (e.g. per-tool settings a client adds), even when they
+        appear *before* the main [mcp_servers.praxis] stanza."""
+        import tomllib
+
+        toml_client.config_path.write_text(
+            '[mcp_servers.node_repl]\n'
+            'command = "node"\n'
+            'args = []\n\n'
+            '[mcp_servers.praxis.tools.fs_read]\n'
+            'auto_approve = true\n\n'
+            '[mcp_servers.praxis.tools.fs_search]\n'
+            'auto_approve = true\n\n'
+            '# Praxis — guardrail for agentic AI (added by `praxis enable`)\n'
+            '[mcp_servers.praxis]\n'
+            'command = "python"\n'
+            'args = ["-m", "praxis.mcp.praxis_server"]\n'
+        )
+        assert toml_client.disable()
+        text = toml_client.config_path.read_text()
+        assert "praxis" not in text.lower()
+        data = tomllib.loads(text)
+        assert "node_repl" in data["mcp_servers"]
+        assert "praxis" not in data.get("mcp_servers", {})
+
     def test_enable_twice_no_duplicate(self, toml_client):
         toml_client.enable(build_server_spec("test-toml"))
         toml_client.enable(build_server_spec("test-toml"))

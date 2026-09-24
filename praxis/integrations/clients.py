@@ -214,19 +214,44 @@ class MCPClient:
         return True
 
     def _strip_toml_praxis(self, text: str) -> str:
-        """Remove any existing ``[mcp_servers.praxis]`` stanza + its
-        leading Praxis comment banner, up to the next table header or EOF."""
-        key = re.escape(self.servers_key)
-        # Remove a leading "# ... Praxis ..." comment line + the stanza.
-        pattern = (
-            rf"\n?#[^\n]*[Pp]raxis[^\n]*\n"
-            rf"\[{key}\.praxis\][\s\S]*?(?=\n\[|\Z)"
-        )
-        text = re.sub(pattern, "\n", text)
-        # Also handle a stanza with no comment banner.
-        pattern2 = rf"\n?\[{key}\.praxis\][\s\S]*?(?=\n\[|\Z)"
-        text = re.sub(pattern2, "\n", text)
-        return text
+        """Remove the *entire* Praxis entry: the ``[mcp_servers.praxis]``
+        table **and** every ``[mcp_servers.praxis.*]`` sub-table (e.g. the
+        per-tool ``[mcp_servers.praxis.tools.fs_read]`` settings a client
+        may add), plus any leading Praxis comment banner.
+
+        Done line-by-line (rather than one regex) so a nested sub-table
+        that appears *before* the main stanza is still removed."""
+        exact = f"{self.servers_key}.praxis"
+        prefix = f"{self.servers_key}.praxis."
+        out: list[str] = []
+        skipping = False
+        removed_any = False
+        for line in text.splitlines():
+            stripped = line.strip()
+            if stripped.startswith("["):
+                name = stripped.strip("[]").strip()
+                if name == exact or name.startswith(prefix):
+                    skipping = True
+                    removed_any = True
+                    # Drop trailing blank lines and a preceding Praxis
+                    # comment banner already collected in `out`.
+                    while out and out[-1].strip() == "":
+                        out.pop()
+                    if (
+                        out
+                        and out[-1].lstrip().startswith("#")
+                        and "praxis" in out[-1].lower()
+                    ):
+                        out.pop()
+                    continue
+                skipping = False
+            if not skipping:
+                out.append(line)
+        if not removed_any:
+            # Nothing matched — return the text byte-for-byte unchanged so
+            # callers can reliably detect "no change".
+            return text
+        return "\n".join(out)
 
     def _render_toml_stanza(self, server_spec: dict[str, Any]) -> str:
         command = server_spec["command"]
