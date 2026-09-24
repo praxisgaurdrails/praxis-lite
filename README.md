@@ -92,11 +92,13 @@ praxis --version
 Pure-Python and cross-platform — the same `pip install` works on macOS, Windows, and Linux
 (Python 3.11+).
 
-### Manual download
+### Prefer a double-click installer?
 
-Grab a standalone bundle from the
-[latest release](https://github.com/praxisgaurdrails/praxis-lite/releases/latest):
-`Praxis-Lite-macos-arm64.zip` · `Praxis-Lite-windows.zip` · `Praxis-Lite-linux-x86_64.tar.gz`.
+Download **`Praxis-Lite-macos-arm64.dmg`** from the
+[latest release](https://github.com/praxisgaurdrails/praxis-lite/releases/latest), open it,
+and double-click **Install Praxis**. *(macOS isn't code-signed yet, so the first time
+you'll right-click → **Open** once.)* Windows/Linux users can grab the
+`.zip` / `.tar.gz` bundles from the same page.
 
 ---
 

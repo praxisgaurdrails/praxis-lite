@@ -12,6 +12,7 @@
 #   praxis daemon start ...                        -> the background daemon
 #   praxis mcp --as-principal agent:x ...          -> the MCP server AI tools spawn
 
+import sys
 from pathlib import Path
 
 block_cipher = None
@@ -128,3 +129,21 @@ coll = COLLECT(
     upx_exclude=[],
     name="praxis",
 )
+
+# On macOS also emit a proper Praxis.app (correct Contents/MacOS +
+# Contents/Frameworks layout) for the .dmg.  This lives alongside the
+# onedir `dist/praxis` folder used by the .zip/.tar bundles.
+if sys.platform == "darwin":
+    app = BUNDLE(
+        coll,
+        name="Praxis.app",
+        icon=None,
+        bundle_identifier="app.praxis.guardrail",
+        info_plist={
+            "CFBundleName": "Praxis",
+            "CFBundleDisplayName": "Praxis",
+            "CFBundleExecutable": "praxis",
+            "LSMinimumSystemVersion": "11.0",
+            "NSHighResolutionCapable": True,
+        },
+    )

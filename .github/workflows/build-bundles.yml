@@ -47,6 +47,11 @@ jobs:
           fi
         shell: bash
 
+      - name: Build macOS .dmg
+        if: runner.os == 'macOS'
+        run: bash packaging/make_dmg.sh
+        shell: bash
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:

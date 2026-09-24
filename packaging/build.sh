@@ -32,6 +32,18 @@ rm -rf build/pyinstaller dist/praxis
 $PY -m PyInstaller packaging/praxis.spec --noconfirm \
     --distpath dist --workpath build/pyinstaller
 
+# macOS: ad-hoc code-sign the nested libraries + launcher. This is a
+# prerequisite for (optional) Developer-ID notarization and keeps the
+# signature consistent; on its own it does NOT bypass Gatekeeper for a
+# *downloaded* app — the installer clears quarantine, or ship a notarized
+# .dmg (see packaging/README.md).
+if [ "$OS" = "Darwin" ] && command -v codesign >/dev/null 2>&1; then
+  echo "==> Ad-hoc code-signing the macOS bundle"
+  find dist/praxis \( -name "*.so" -o -name "*.dylib" \) -type f \
+    -exec codesign --force --timestamp=none -s - {} + 2>/dev/null || true
+  codesign --force --timestamp=none -s - dist/praxis/praxis 2>/dev/null || true
+fi
+
 mkdir -p dist/artifacts
 case "$OS" in
   Darwin)
