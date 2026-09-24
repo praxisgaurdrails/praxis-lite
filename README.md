@@ -63,35 +63,40 @@ Praxis is the missing safety layer:
 
 ## Install
 
-**With pip** (recommended — works on macOS, Windows, and Linux, Python 3.11+):
+### The easy way (no Python needed)
+
+One command downloads the app, connects it to your AI tools, and sets a safe default.
+
+**macOS / Linux:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/praxisgaurdrails/praxis-lite/main/install.sh | sh
+```
+
+**Windows (PowerShell):**
+
+```powershell
+irm https://raw.githubusercontent.com/praxisgaurdrails/praxis-lite/main/install.ps1 | iex
+```
+
+That's it — no Python, no pip, no PATH setup. Then restart your AI tool. *(On an Intel
+Mac, use the pip method below.)*
+
+### With pip (for Python users)
 
 ```bash
 pip install praxis-guardrail
 praxis --version
 ```
 
-The package is pure-Python and cross-platform — the same `pip install` works on **macOS,
-Windows, and Linux**.
+Pure-Python and cross-platform — the same `pip install` works on macOS, Windows, and Linux
+(Python 3.11+).
 
-**No Python?** Download a standalone bundle (no install required) for your OS from the
+### Manual download
+
+Grab a standalone bundle from the
 [latest release](https://github.com/praxisgaurdrails/praxis-lite/releases/latest):
-
-| Platform | Download |
-| --- | --- |
-| 🍎 macOS (Apple Silicon / Intel) | `Praxis-Lite-macos-*.zip` |
-| 🪟 Windows 10/11 | `Praxis-Lite-windows.zip` |
-| 🐧 Linux (x86_64) | `Praxis-Lite-linux-*.tar.gz` |
-
-> On macOS the beta bundle isn't code-signed yet — the first time you run it, right-click
-> the `praxis` launcher → **Open**.
-
-**From source:**
-
-```bash
-git clone https://github.com/praxisgaurdrails/praxis-lite.git
-cd praxis-lite
-pip install -e .
-```
+`Praxis-Lite-macos-arm64.zip` · `Praxis-Lite-windows.zip` · `Praxis-Lite-linux-x86_64.tar.gz`.
 
 ---
 
