@@ -112,7 +112,7 @@ def _print_fs_result(r: dict[str, Any]) -> None:
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="praxis")
+@click.version_option(version=__import__("praxis").__version__, prog_name="praxis")
 def main() -> None:
     """🛡️  Praxis — the guardrail for agentic AI + your offline file assistant."""
     pass
